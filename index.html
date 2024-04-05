@@ -1,98 +1,95 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Проект "Комменты"</title>
-    <meta charset="utf-8" />
-    <link rel="stylesheet" href="styles.css" />
-  </head>
 
-  <body>
-    <div class="container">
-      <ul id="list" class="comments">
-        <li class="comment">
-          <div class="comment-header">
-            <div>Глеб Фокин</div>
-            <div>12.02.22 12:18</div>
-          </div>
-          <div class="comment-body">
-            <div class="comment-text">
-              Это будет первый комментарий на этой странице
-            </div>
-          </div>
-          <div class="comment-footer">
-            <div class="likes">
-              <span id="counter" class="likes-counter">3</span>
-              <button class="like-button"></button>
-            </div>
-          </div>
-        </li>
-        <li class="comment">
-          <div class="comment-header">
-            <div>Варвара Н.</div>
-            <div>13.02.22 19:22</div>
-          </div>
-          <div class="comment-body">
-            <div class="comment-text">
-              Мне нравится как оформлена эта страница! ❤
-            </div>
-          </div>
-          <div class="comment-footer">
-            <div class="likes">
-              <span class="likes-counter">75</span>
-              <button class="like-button -active-like"></button>
-            </div>
-          </div>
-        </li>
-      </ul>
-      <div class="add-form">
-        <input
-          id="name-text"
-          type="text"
-          class="add-form-name"
-          placeholder="Введите ваше имя"
-        />
-        <textarea
-          id="comment-form-text"
-          type="textarea"
-          class="add-form-text"
-          placeholder="Введите ваш коментарий"
-          rows="4"
-        ></textarea>
-        <div class="add-form-row">
-          <button id="add-button" class="add-form-button">Написать</button>
+<head>
+  <title>Проект "Комменты"</title>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <div class="container">
+    <ul id="list" class="comments">
+      <li class="comment">
+        <div class="comment-header">
+          <div>Глеб Фокин</div>
+          <div>12.02.22 12:18</div>
         </div>
+        <div class="comment-body">
+          <div class="comment-text">
+            Это будет первый комментарий на этой странице
+          </div>
+        </div>
+        <div class="comment-footer">
+          <div class="likes">
+            <span id="counter" class="likes-counter">3</span>
+            <button class="like-button"></button>
+          </div>
+        </div>
+      </li>
+      <li class="comment">
+        <div class="comment-header">
+          <div>Варвара Н.</div>
+          <div>13.02.22 19:22</div>
+        </div>
+        <div class="comment-body">
+          <div class="comment-text">
+            Мне нравится как оформлена эта страница! ❤
+          </div>
+        </div>
+        <div class="comment-footer">
+          <div class="likes">
+            <span class="likes-counter">75</span>
+            <button class="like-button -active-like"></button>
+          </div>
+        </div>
+      </li>
+    </ul>
+    <div class="add-form">
+      <input id="name-text" type="text" class="add-form-name" placeholder="Введите ваше имя" />
+      <textarea id="comment-form-text" type="textarea" class="add-form-text" placeholder="Введите ваш коментарий"
+        rows="4"></textarea>
+      <div class="add-form-row">
+        <button id="add-button" class="add-form-button">Написать</button>
       </div>
     </div>
-  </body>
+  </div>
+</body>
 
-  <script>
-    "use strict";
-    const buttonElement = document.getElementById('add-button'); // получаем кнопку, buttonElement ссылается на элемент из DOM с id 'add-button'
-    const listElement = document.getElementById('list'); // получаем список комментариев, listElement ссылается на элемент из DOM с id 'list' 
-    const nameTextElement = document.getElementById('name-text'); // получаем инпут ввода имени, nameTextElement ссылается на элемент из DOM с id 'name-text'
-    const commentTextElement = document.getElementById('comment-form-text'); // получаем форму комментария, commentTextElement ссылается на элемент из DOM с id 'comment-form-text'
-    const counterElement = document.getElementById('counter'); // получаем лайки, counterElement ссылается на элемент из DOM с id 'counter'
-    
-    // добавляем обработчик события на элемент - buttonElement (кнопку 'Написать')
-    buttonElement.addEventListener('click', () => {
+<script>
+  "use strict";
+  // получаем кнопку, buttonElement ссылается на элемент из DOM с id 'add-button'
+  const buttonElement = document.getElementById('add-button');
+  // получаем список комментариев, listElement ссылается на элемент из DOM с id 'list' 
+  const listElement = document.getElementById('list');
+  // получаем инпут ввода имени, nameTextElement ссылается на элемент из DOM с id 'name-text'
+  const nameTextElement = document.getElementById('name-text');
+  // получаем форму комментария, commentTextElement ссылается на элемент из DOM с id 'comment-form-text'
+  const commentTextElement = document.getElementById('comment-form-text');
+  // получаем лайки, counterElement ссылается на элемент из DOM с id 'counter'
+  const counterElement = document.getElementById('counter');
 
-      // валидация формы ввода имени и комментария
-      nameTextElement.classList.remove('error');
-      commentTextElement.classList.remove('error');
+  // добавляем обработчик события на элемент - buttonElement (кнопку 'Написать')
+  buttonElement.addEventListener('click', () => {
 
-      if (nameTextElement.value === '' && commentTextElement.value === '') {
-        nameTextElement.classList.add('error');
-        commentTextElement.classList.add('error');
-        return;
-      } else if (nameTextElement.value === '') {
-        nameTextElement.classList.add('error');
-        return;
-      } else if (commentTextElement.value === '') {
-        commentTextElement.classList.add('error');
-        return;
-      } 
+    // валидация формы ввода имени и комментария
+    nameTextElement.classList.remove('error');
+    commentTextElement.classList.remove('error');
 
-      // Получение и форматирование даты
+    if (nameTextElement.value === '' && commentTextElement.value === '') {
+      nameTextElement.classList.add('error');
+      commentTextElement.classList.add('error');
+      return;
+    } else if (nameTextElement.value === '') {
+      nameTextElement.classList.add('error');
+      return;
+    } else if (commentTextElement.value === '') {
+      commentTextElement.classList.add('error');
+      return;
+    }
+
+    // Получение и форматирование даты
+    const formatDate = () => {
       const currentDate = new Date;
 
       let date = currentDate.getDate();
@@ -100,27 +97,31 @@
       let year = currentDate.getFullYear();
       let hours = currentDate.getHours();
       let minutes = currentDate.getMinutes();
+
       let shortYear = year % 100;
+
       if (date < 10) {
         date = '0' + date
-      } if (month < 10) {
+      }
+      if (month < 10) {
         month = '0' + month
-      } if (hours < 10) {
+      }
+      if (hours < 10) {
         hours = '0' + hours
-      } if (minutes < 10) {
+      }
+      if (minutes < 10) {
         minutes = '0' + minutes
-      } 
-    
+      }
+      return `${date}.${month}.${shortYear} ${hours}:${minutes}`;
+    };
 
-      let counter = 0; // обнуление лайков
-
-      // innerHTML - получаем все HTML содержимое внутри listElement 
-      const oldListHTML = listElement.innerHTML;
-      listElement.innerHTML = oldListHTML + 
+    // innerHTML - получаем все HTML содержимое внутри listElement 
+    const oldListHTML = listElement.innerHTML;
+    listElement.innerHTML = oldListHTML +
       ` <li class="comment">
           <div class="comment-header">
             <div>${nameTextElement.value}</div>
-            <div>${date}.${month}.${shortYear} ${hours}:${minutes}</div>
+            <div>${formatDate()}</div>
           </div>
           <div class="comment-body">
             <div class="comment-text">
@@ -129,14 +130,14 @@
           </div>
           <div class="comment-footer">
             <div class="likes">
-              <span class="likes-counter">${counterElement.innerHTML = counter}</span>
+              <span class="likes-counter">0</span>
               <button class="like-button"></button>
             </div>
           </div>
         </li>`;
 
-        nameTextElement.value = "";
-        commentTextElement.value = "";
-    });
-  </script>
+    nameTextElement.value = "";
+    commentTextElement.value = "";
+  });
+</script>
 </html>
