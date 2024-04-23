@@ -10,7 +10,10 @@
 <body>
   <div class="container">
     <ul id="list" class="comments">
-      <li class="comment">
+
+      <!--список рендериться из JS -->
+
+      <!-- <li class="comment">
         <div class="comment-header">
           <div>Глеб Фокин</div>
           <div>12.02.22 12:18</div>
@@ -43,7 +46,8 @@
             <button class="like-button -active-like"></button>
           </div>
         </div>
-      </li>
+      </li> -->
+
     </ul>
     <div class="add-form">
       <input id="name-text" type="text" class="add-form-name" placeholder="Введите ваше имя" />
@@ -69,8 +73,72 @@
   // получаем лайки, counterElement ссылается на элемент из DOM с id 'counter'
   const counterElement = document.getElementById('counter');
 
+
+  const comments = [{
+      name: 'Глеб Фокин',
+      comment: 'Это будет первый комментарий на этой странице',
+      numberLiks: 3,
+      like: false,
+      date: '12.02.22 12:18',
+    },
+    {
+      name: 'Варвара Н.',
+      comment: 'Мне нравится как оформлена эта страница! ❤',
+      numberLiks: 75,
+      like: true,
+      date: '13.02.22 19:22',
+    },
+  ];
+
+  // рендерится список комметариев из HTML
+  const renderComments = () => {
+    const commentsHTML = comments.map((commentMap, index) => {
+      return `<li class="comment">
+          <div class="comment-header">
+            <div>${commentMap.name}</div>
+            <div>${commentMap.date}</div>
+          </div>
+          <div class="comment-body">
+            <div class="comment-text">
+              ${commentMap.comment}
+            </div>
+          </div>
+          <div class="comment-footer">
+            <div class="likes">
+              <span class="likes-counter">${commentMap.numberLiks}</span>
+              <button class="like-button ${commentMap.like ? '-active-like' : ''}" data-index='${index}'></button>
+            </div>
+          </div>
+        </li>`;
+    }).join('');
+
+    listElement.innerHTML = commentsHTML;
+    initAddingRemoveLikes();
+  };
+
+  renderComments();
+
+  // инициализируем обработчик события на кнопку лайков
+  function initAddingRemoveLikes() {
+    const addingRemoveLikes = document.querySelectorAll('.like-button');
+
+    for (const addRemoveLike of addingRemoveLikes) {
+      addRemoveLike.addEventListener('click', () => {
+        const index = addRemoveLike.dataset.index
+        if (comments[index].like === false) {
+          comments[index].numberLiks += 1;
+        }
+        if (comments[index].like === true) {
+          comments[index].numberLiks -= 1;
+        };
+        comments[index].like = !comments[index].like
+        renderComments();
+      });
+    };
+  };
+
   // добавляем обработчик события на элемент - buttonElement (кнопку 'Написать')
-  buttonElement.addEventListener('click', () => {
+  const addingComment = buttonElement.addEventListener('click', () => {
 
     // валидация формы ввода имени и комментария
     nameTextElement.classList.remove('error');
@@ -115,29 +183,19 @@
       return `${date}.${month}.${shortYear} ${hours}:${minutes}`;
     };
 
-    // innerHTML - получаем все HTML содержимое внутри listElement 
-    const oldListHTML = listElement.innerHTML;
-    listElement.innerHTML = oldListHTML +
-      ` <li class="comment">
-          <div class="comment-header">
-            <div>${nameTextElement.value}</div>
-            <div>${formatDate()}</div>
-          </div>
-          <div class="comment-body">
-            <div class="comment-text">
-              ${commentTextElement.value}
-            </div>
-          </div>
-          <div class="comment-footer">
-            <div class="likes">
-              <span class="likes-counter">0</span>
-              <button class="like-button"></button>
-            </div>
-          </div>
-        </li>`;
+    // пушим данные в новый комментарий
+    comments.push({
+      name: nameTextElement.value,
+      comment: commentTextElement.value,
+      date: formatDate(),
+      numberLiks: 0,
+      like: false,
+    });
 
+    renderComments();
     nameTextElement.value = "";
     commentTextElement.value = "";
   });
 </script>
+
 </html>
