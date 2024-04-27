@@ -114,6 +114,7 @@
 
     listElement.innerHTML = commentsHTML;
     initAddingRemoveLikes();
+    replyToComment();
   };
 
   renderComments();
@@ -123,7 +124,9 @@
     const addingRemoveLikes = document.querySelectorAll('.like-button');
 
     for (const addRemoveLike of addingRemoveLikes) {
-      addRemoveLike.addEventListener('click', () => {
+      addRemoveLike.addEventListener('click', (e) => {
+        e.stopPropagation();
+
         const index = addRemoveLike.dataset.index
         if (comments[index].like === false) {
           comments[index].numberLiks += 1;
@@ -185,8 +188,8 @@
 
     // пушим данные в новый комментарий
     comments.push({
-      name: nameTextElement.value,
-      comment: commentTextElement.value,
+      name: sanitize(nameTextElement.value),
+      comment: sanitize(commentTextElement.value),
       date: formatDate(),
       numberLiks: 0,
       like: false,
@@ -196,6 +199,26 @@
     nameTextElement.value = "";
     commentTextElement.value = "";
   });
+
+  function replyToComment() {
+    const commentsText = document.querySelectorAll('.comment'); // получаем комментарии
+
+    commentsText.forEach((el, index) => {
+      el.addEventListener('click', () => {
+        commentTextElement.value =
+          `QUOTE_BEGIN>${comments[index].name} \n ${comments[index].comment}QUOTE_END \n`
+      });
+
+    });
+  };
+
+  function sanitize(text) {
+    return text
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll("QUOTE_BEGIN", "</div>")
+      .replaceAll("QUOTE_END", "</div>");
+  };
 </script>
 
 </html>
