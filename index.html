@@ -74,21 +74,7 @@
   const counterElement = document.getElementById('counter');
 
 
-  const comments = [{
-      name: 'Глеб Фокин',
-      comment: 'Это будет первый комментарий на этой странице',
-      numberLiks: 3,
-      like: false,
-      date: '12.02.22 12:18',
-    },
-    {
-      name: 'Варвара Н.',
-      comment: 'Мне нравится как оформлена эта страница! ❤',
-      numberLiks: 75,
-      like: true,
-      date: '13.02.22 19:22',
-    },
-  ];
+  let comments = [];
 
   // рендерится список комметариев из HTML
   const renderComments = () => {
@@ -96,7 +82,7 @@
       return `<li class="comment">
           <div class="comment-header">
             <div>${commentMap.name}</div>
-            <div>${commentMap.date}</div>
+            <div>${formatDate()}</div>
           </div>
           <div class="comment-body">
             <div class="comment-text">
@@ -116,8 +102,32 @@
     initAddingRemoveLikes();
     replyToComment();
   };
-
   renderComments();
+
+  function gettingComments() {
+    // принимает адрес API  и параметры запроса, возвращает Promise - обещание результата
+    const commentsPromis = fetch("https://wedev-api.sky.pro/api/v1/personal-key/comments", {
+      method: "GET"
+    });
+
+    commentsPromis.then((response) => { // в response хранится информация об ответе
+      const jsonPromise = response.json(); // преобразовываем сырые данные от API в json формат
+      jsonPromise.then((responseData) => { // данные ответа, подписываемся на результат преобразования
+        const appComments = responseData.comments.map((comment) => {
+          return {
+            name: comment.author.name,
+            comment: comment.text,
+            numberLiks: comment.likes,
+            like: false,
+            date: new Date(comment.date),
+          };
+        });
+        comments = appComments;
+        renderComments();
+      });
+    });
+  };
+  gettingComments();
 
   // инициализируем обработчик события на кнопку лайков
   function initAddingRemoveLikes() {
@@ -159,57 +169,61 @@
       return;
     }
 
-    // Получение и форматирование даты
-    const formatDate = () => {
-      const currentDate = new Date;
-
-      let date = currentDate.getDate();
-      let month = currentDate.getMonth();
-      let year = currentDate.getFullYear();
-      let hours = currentDate.getHours();
-      let minutes = currentDate.getMinutes();
-
-      let shortYear = year % 100;
-
-      if (date < 10) {
-        date = '0' + date
-      }
-      if (month < 10) {
-        month = '0' + month
-      }
-      if (hours < 10) {
-        hours = '0' + hours
-      }
-      if (minutes < 10) {
-        minutes = '0' + minutes
-      }
-      return `${date}.${month}.${shortYear} ${hours}:${minutes}`;
-    };
-
-    // пушим данные в новый комментарий
-    comments.push({
-      name: sanitize(nameTextElement.value),
-      comment: sanitize(commentTextElement.value),
-      date: formatDate(),
-      numberLiks: 0,
-      like: false,
-    });
-
     renderComments();
-    nameTextElement.value = "";
-    commentTextElement.value = "";
+
+    // Сохраняет новый комментарий на сервере
+    const newCommentsPromise = fetch("https://wedev-api.sky.pro/api/v1/personal-key/comments", {
+        method: "POST",
+        body: JSON.stringify({
+          name: sanitize(nameTextElement.value),
+          text: sanitize(commentTextElement.value),
+        }),
+      })
+      .then(() => {
+        gettingComments();
+      })
+      .then(() => {
+        nameTextElement.value = '';
+        commentTextElement.value = '';
+      })
   });
 
   function replyToComment() {
     const commentsText = document.querySelectorAll('.comment'); // получаем комментарии
-
     commentsText.forEach((el, index) => {
       el.addEventListener('click', () => {
         commentTextElement.value =
           `QUOTE_BEGIN>${comments[index].name} \n ${comments[index].comment}QUOTE_END \n`
       });
-
     });
+  };
+
+  // Получение и форматирование даты
+  function formatDate() {
+    const currentDate = new Date;
+
+    let date = currentDate.getDate();
+    let month = currentDate.getMonth();
+    let year = currentDate.getFullYear();
+    let hours = currentDate.getHours();
+    let minutes = currentDate.getMinutes();
+
+    let shortYear = year % 100;
+
+    if (date < 10) {
+      date = '0' + date
+    }
+    if (month < 10) {
+      month = '0' + month
+    }
+    if (hours < 10) {
+      hours = '0' + hours
+    }
+    if (minutes < 10) {
+      minutes = '0' + minutes
+    }
+    const formatedTime = `${date}.${month}.${shortYear} ${hours}:${minutes}`;
+    return formatedTime;
   };
 
   function sanitize(text) {
