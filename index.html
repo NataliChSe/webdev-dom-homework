@@ -104,15 +104,15 @@
   };
   renderComments();
 
-  function gettingComments() {
-    // принимает адрес API  и параметры запроса, возвращает Promise - обещание результата
-    const commentsPromis = fetch("https://wedev-api.sky.pro/api/v1/personal-key/comments", {
-      method: "GET"
-    });
+  listElement.textContent = 'Комментарии загружаются...';
 
-    commentsPromis.then((response) => { // в response хранится информация об ответе
-      const jsonPromise = response.json(); // преобразовываем сырые данные от API в json формат
-      jsonPromise.then((responseData) => { // данные ответа, подписываемся на результат преобразования
+  // Получение комментария с сервера
+  function getComments() {
+    return fetch("https://wedev-api.sky.pro/api/v1/personal-key/comments", {
+        method: "GET"
+      })
+      .then((response) => response.json())
+      .then((responseData) => {
         const appComments = responseData.comments.map((comment) => {
           return {
             name: comment.author.name,
@@ -125,9 +125,8 @@
         comments = appComments;
         renderComments();
       });
-    });
   };
-  gettingComments();
+  getComments();
 
   // инициализируем обработчик события на кнопку лайков
   function initAddingRemoveLikes() {
@@ -171,6 +170,9 @@
 
     renderComments();
 
+    buttonElement.disabled = true;
+    buttonElement.textContent = 'Комментарий добавляется...';
+
     // Сохраняет новый комментарий на сервере
     const newCommentsPromise = fetch("https://wedev-api.sky.pro/api/v1/personal-key/comments", {
         method: "POST",
@@ -180,11 +182,15 @@
         }),
       })
       .then(() => {
-        gettingComments();
+        return getComments();
       })
       .then(() => {
         nameTextElement.value = '';
         commentTextElement.value = '';
+      })
+      .then(() => {
+        buttonElement.disabled = false;
+        buttonElement.textContent = 'Написать';
       })
   });
 
