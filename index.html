@@ -10,44 +10,6 @@
 <body>
   <div class="container">
     <ul id="list" class="comments">
-
-      <!--список рендериться из JS -->
-
-      <!-- <li class="comment">
-        <div class="comment-header">
-          <div>Глеб Фокин</div>
-          <div>12.02.22 12:18</div>
-        </div>
-        <div class="comment-body">
-          <div class="comment-text">
-            Это будет первый комментарий на этой странице
-          </div>
-        </div>
-        <div class="comment-footer">
-          <div class="likes">
-            <span id="counter" class="likes-counter">3</span>
-            <button class="like-button"></button>
-          </div>
-        </div>
-      </li>
-      <li class="comment">
-        <div class="comment-header">
-          <div>Варвара Н.</div>
-          <div>13.02.22 19:22</div>
-        </div>
-        <div class="comment-body">
-          <div class="comment-text">
-            Мне нравится как оформлена эта страница! ❤
-          </div>
-        </div>
-        <div class="comment-footer">
-          <div class="likes">
-            <span class="likes-counter">75</span>
-            <button class="like-button -active-like"></button>
-          </div>
-        </div>
-      </li> -->
-
     </ul>
     <div class="add-form">
       <input id="name-text" type="text" class="add-form-name" placeholder="Введите ваше имя" />
@@ -179,7 +141,17 @@
         body: JSON.stringify({
           name: sanitize(nameTextElement.value),
           text: sanitize(commentTextElement.value),
+          forceError: true,
         }),
+      })
+      .then((response) => {
+        if (response.status === 400) {
+          throw new Error('Имя должно содержать хотя бы 3 символа')
+        }
+        if (response.status === 500) {
+          throw new Error('Сервер упал')
+        }
+        return response.json();
       })
       .then(() => {
         return getComments();
@@ -191,6 +163,18 @@
       .then(() => {
         buttonElement.disabled = false;
         buttonElement.textContent = 'Написать';
+      })
+      .catch((error) => {
+        buttonElement.disabled = false;
+        buttonElement.textContent = 'Написать';
+        if (error.message === 'Имя должно содержать хотя бы 3 символа') {
+          alert('Введите имя не менее трех символов')
+        }
+        if (error.message === 'Сервер упал') {
+          alert('Сервер упал')
+        } else {
+          alert('Нет интернета, попробуйте попытку позже');
+        }
       })
   });
 
